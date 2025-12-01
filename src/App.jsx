@@ -6,6 +6,8 @@ import SignIn from "./pages/SignIn";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "./_components/app-sidebar";
 import Books from "./pages/Books";
+import Copies from "./pages/Copies";
+import Members from "./pages/Members";
 
 
 function App() {
@@ -19,6 +21,8 @@ function App() {
             <Route path="/signup" element={<SignUp />} />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/books" element={<Books />} />
+            <Route path="/copies" element={<Copies />} />
+            <Route path="/members" element={<Members />} />
           </Routes>
         </main>
       </SidebarProvider>

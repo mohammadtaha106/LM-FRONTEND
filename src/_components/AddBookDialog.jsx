@@ -17,7 +17,8 @@ import { Label } from "@/components/ui/label";
 
 function AddBookDialog() {
   const [open, setOpen] = useState(false);
-
+  const [imageFile, setImageFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     genre: "",
@@ -57,6 +58,37 @@ function AddBookDialog() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const imageMutation = useMutation({
+    mutationFn: async (file) => {
+      const formData = new FormData();
+      formData.append("image", file);
+      const res = await axiosInstance.post("/upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return res.data;
+    },
+    onSuccess: (data) => {
+      setFormData({ ...formData, coverImage: data.url });
+      setUploading(false);
+    },
+     onError: (error) => {
+    setUploading(false);
+    console.error('Upload failed:', error);
+
+  }
+
+  });
+
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setImageFile(file);
+    setUploading(true);
+    imageMutation.mutate(file);
+  };
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
@@ -130,6 +162,21 @@ function AddBookDialog() {
               value={formData.publicationYear}
               onChange={handleChange}
             />
+          </div>
+
+          <div className="grid gap-2">
+            <Label>Cover Image</Label>
+            <Input type="file" accept="image/*" onChange={handleImageSelect} />
+            {uploading && (
+              <p className="text-sm text-gray-500 mt-1">Uploading...</p>
+            )}
+            {formData.coverImage && (
+              <img
+                src={formData.coverImage}
+                alt="Preview"
+                className="mt-2 w-24 h-32 object-cover rounded"
+              />
+            )}
           </div>
 
           <DialogFooter>
